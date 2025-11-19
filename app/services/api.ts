@@ -58,11 +58,20 @@ export const apiService = {
   getUdhaars: async () => {
     try {
       const response = await api.get("/entries");
-      const entries = response.data.entries;
-      let udhaars = [];
+      const entries: any[] = response.data.entries;
+      
+      interface Udhaar {
+        id: string;
+        name: string;
+        date: string;
+        amount: number;
+        paid: boolean;
+      }
+
+      let udhaars: Udhaar[] = [];
 
       entries.map((e) => {
-        e.udhaar.map((u) => {
+        e.udhaar.map((u: any) => {
           udhaars.push({ ...u, id: e._id });
         });
       });
