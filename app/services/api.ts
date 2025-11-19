@@ -84,13 +84,13 @@ export const apiService = {
     }
   },
 
-  updateUdhaar: async (u) => {
+  updateUdhaar: async (u: any) => {
     try {
       const res = await api.patch(
         `/entries?entryID=${u.id}&udhaarName=${u.name}`
       );
       return res
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         error.response?.data?.message || "Failed to patch entries"
       );
