@@ -69,21 +69,27 @@ export default function Home() {
 
   const handleAddEntry = async (entryData: any) => {
     try {
+      setLoading(true);
       await apiService.addEntry(entryData);
       await fetchEntries(); // Refresh the list
     } catch (err: any) {
       setError(err.message);
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const handlePay = async (u: any) => {
     try {
+      setLoading(true);
       await apiService.updateUdhaar(u);
       await fetchEntries();
     } catch (err: any) {
       setError(err.message);
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 

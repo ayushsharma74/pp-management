@@ -5,6 +5,7 @@ interface UdhaarEntry {
   date: Date;
   amount: number;
   paid: boolean;
+  paidDate?: Date;
 }
 
 export interface DailyEntry extends mongoose.Document {
@@ -45,6 +46,7 @@ const udhaarSchema = new mongoose.Schema<UdhaarEntry>(
     date: { type: Date, required: true },
     amount: { type: Number, required: true, min: 0 },
     paid: { type: Boolean, default: false },
+    paidDate: { type: Date },
   },
   { _id: false }
 );

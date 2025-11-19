@@ -17,6 +17,7 @@ interface UdhaarEntry {
   date: string;
   amount: number;
   paid: boolean;
+  paidDate?: string;
 }
 
 interface Entry {
@@ -197,6 +198,11 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, onDelete }) => {
                       >
                         <span className="font-semibold tracking-tight">
                           {u.paid ? "PAID" : "PENDING"}
+                          {u.paid && u.paidDate && (
+                            <span className="text-xs font-normal ml-2 text-gray-600">
+                              on {new Date(u.paidDate).toLocaleDateString("en-IN")}
+                            </span>
+                          )}
                         </span>
 
                         <div className="flex justify-between text-sm">

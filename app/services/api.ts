@@ -66,6 +66,7 @@ export const apiService = {
         date: string;
         amount: number;
         paid: boolean;
+        paidDate?: string;
       }
 
       let udhaars: Udhaar[] = [];

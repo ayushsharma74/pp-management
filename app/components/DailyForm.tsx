@@ -58,17 +58,23 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
      Calculate real-time sale, received, profit
   --------------------------------------------*/
   const calculateProfit = () => {
-    const pPrev = parseFloat(String(watchedValues.previousPetrolReading ?? 0));
-    const pCurr = parseFloat(String(watchedValues.currentPetrolReading ?? 0));
-    const pRate = parseFloat(String(watchedValues.petrolRate ?? 0));
+    const safeParse = (val: any) => {
+      if (val === "" || val === undefined || val === null) return 0;
+      const num = parseFloat(String(val));
+      return isNaN(num) ? 0 : num;
+    };
 
-    const dPrev = parseFloat(String(watchedValues.previousDieselReading ?? 0));
-    const dCurr = parseFloat(String(watchedValues.currentDieselReading ?? 0));
-    const dRate = parseFloat(String(watchedValues.dieselRate ?? 0));
+    const pPrev = safeParse(watchedValues.previousPetrolReading);
+    const pCurr = safeParse(watchedValues.currentPetrolReading);
+    const pRate = safeParse(watchedValues.petrolRate);
 
-    const cash = parseFloat(String(watchedValues.cash ?? 0));
-    const online = parseFloat(String(watchedValues.onlinePay ?? 0));
-    const other = parseFloat(String(watchedValues.otherPayment ?? 0));
+    const dPrev = safeParse(watchedValues.previousDieselReading);
+    const dCurr = safeParse(watchedValues.currentDieselReading);
+    const dRate = safeParse(watchedValues.dieselRate);
+
+    const cash = safeParse(watchedValues.cash);
+    const online = safeParse(watchedValues.onlinePay);
+    const other = safeParse(watchedValues.otherPayment);
 
     const petrolSales = pCurr - pPrev;
     const dieselSales = dCurr - dPrev;

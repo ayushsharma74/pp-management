@@ -186,7 +186,7 @@ export async function PATCH(request: NextRequest) {
 
   const updatedEntry = await DailyEntry.findOneAndUpdate(
     { _id: entryID, "udhaar.name": udhaarName.toLowerCase() },
-    { $set: { "udhaar.$.paid": true } },
+    { $set: { "udhaar.$.paid": true, "udhaar.$.paidDate": new Date() } },
     { new: true }
   );
 
