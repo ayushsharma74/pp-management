@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const entries = await DailyEntry.find({})
       .select(
-        "petrolSales petrolRate dieselSales dieselRate cash onlinePay otherPayment totalSaleAmount totalReceived profit date name udhaar createdAt updatedAt"
+        "petrolSales petrolRate dieselSales dieselRate cash onlinePay otherPayment totalSaleAmount totalReceived profit date name udhaar createdAt updatedAt previousPetrolReading currentPetrolReading previousDieselReading currentDieselReading"
       )
       .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 })
       .limit(limit)
