@@ -6,15 +6,22 @@ import DailyForm from "./components/DailyForm";
 import EntryCard from "./components/EntryCard";
 import ExportButton from "./components/ExportButton";
 import { apiService } from "./services/api";
+import { redirect } from "next/navigation";
 
 interface Entry {
   _id: string;
+  name: string;
   petrolSales: number;
   petrolRate: number;
   dieselSales: number;
   dieselRate: number;
+  previousPetrolReading: number;
+  currentPetrolReading: number;
+  previousDieselReading: number;
+  currentDieselReading: number;
   cash: number;
   onlinePay: number;
+  otherPayment: number;
   totalSaleAmount: number;
   totalReceived: number;
   profit: number;
@@ -27,8 +34,19 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  function checkAuth() {
+    const isAuthenticated = localStorage.getItem("authstat");
+    console.log("AUTH", isAuthenticated);
+
+    if (isAuthenticated !== "true") {
+      console.log("not auth");
+      return redirect("/login");
+    }
     fetchEntries();
+  }
+
+  useEffect(() => {
+    checkAuth();
   }, []);
 
   const fetchEntries = async () => {
@@ -38,6 +56,7 @@ export default function Home() {
       const udhaars = await apiService.getUdhaars();
       setUdhaars(udhaars);
       console.log(udhaars);
+      console.log("ENTRIES", data);
 
       setEntries(data);
       setError(null);
@@ -58,7 +77,7 @@ export default function Home() {
     }
   };
 
-  const handlePay = async (u) => {
+  const handlePay = async (u: any) => {
     try {
       await apiService.updateUdhaar(u);
       await fetchEntries();

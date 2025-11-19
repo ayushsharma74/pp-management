@@ -11,12 +11,21 @@ interface UdhaarEntry {
 }
 
 interface FormData {
-  petrolSales: number;
+  name: string;
+  date: string;
+
+  previousPetrolReading: number;
+  currentPetrolReading: number;
   petrolRate: number;
-  dieselSales: number;
+
+  previousDieselReading: number;
+  currentDieselReading: number;
   dieselRate: number;
+
   cash: number;
   onlinePay: number;
+  otherPayment: number;
+
   udhaar: UdhaarEntry[];
 }
 
@@ -32,37 +41,55 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
     control,
     reset,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({
+    defaultValues: { udhaar: [] },
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const watchedValues = watch();
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "udhaar",
   });
 
-  // Calculate profit/loss in real-time
+  /* -------------------------------------------
+     Calculate real-time sale, received, profit
+  --------------------------------------------*/
   const calculateProfit = () => {
-    const petrolSales = parseFloat(watchedValues.petrolSales?.toString()) || 0;
-    const petrolRate = parseFloat(watchedValues.petrolRate?.toString()) || 0;
-    const dieselSales = parseFloat(watchedValues.dieselSales?.toString()) || 0;
-    const dieselRate = parseFloat(watchedValues.dieselRate?.toString()) || 0;
-    const cash = parseFloat(watchedValues.cash?.toString()) || 0;
-    const onlinePay = parseFloat(watchedValues.onlinePay?.toString()) || 0;
+    const pPrev = parseFloat(String(watchedValues.previousPetrolReading ?? 0));
+    const pCurr = parseFloat(String(watchedValues.currentPetrolReading ?? 0));
+    const pRate = parseFloat(String(watchedValues.petrolRate ?? 0));
 
-    const totalSaleAmount = petrolSales * petrolRate + dieselSales * dieselRate;
-    const totalReceived = cash + onlinePay;
+    const dPrev = parseFloat(String(watchedValues.previousDieselReading ?? 0));
+    const dCurr = parseFloat(String(watchedValues.currentDieselReading ?? 0));
+    const dRate = parseFloat(String(watchedValues.dieselRate ?? 0));
+
+    const cash = parseFloat(String(watchedValues.cash ?? 0));
+    const online = parseFloat(String(watchedValues.onlinePay ?? 0));
+    const other = parseFloat(String(watchedValues.otherPayment ?? 0));
+
+    const petrolSales = pCurr - pPrev;
+    const dieselSales = dCurr - dPrev;
+
+    const totalSaleAmount = petrolSales * pRate + dieselSales * dRate;
+    const totalReceived = cash + online + other;
     const profit = totalReceived - totalSaleAmount;
 
-    return { totalSaleAmount, totalReceived, profit };
+    return { petrolSales, dieselSales, totalSaleAmount, totalReceived, profit };
   };
 
-  const { totalSaleAmount, totalReceived, profit } = calculateProfit();
+  const { petrolSales, dieselSales, totalSaleAmount, totalReceived, profit } =
+    calculateProfit();
 
+  /* -------------------------------------------
+      Submit
+  --------------------------------------------*/
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      console.log(data);
+      console.log("FORM SUBMIT =>", data);
 
       await onAddEntry(data);
       reset();
@@ -83,141 +110,183 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Petrol Section */}
+        {/* NAME + DATE */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Name
+          </label>
+          <input
+            type="text"
+            {...register("name", { required: "Name is required" })}
+            placeholder="Umesh Sharma"
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Date
+          </label>
+          <input
+            type="date"
+            {...register("date", { required: "Date is required" })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.date && (
+            <p className="text-red-500 text-sm">{errors.date.message}</p>
+          )}
+        </div>
+
+        {/* PETROL SECTION */}
         <div className="bg-orange-50 rounded-lg p-4">
           <h3 className="font-semibold text-orange-800 mb-3">Petrol Sales</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Previous */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Sales (Liters)
+              <label className="block text-sm font-medium">
+                Previous Reading
               </label>
               <input
                 type="number"
-                step="0.01"
-                {...register("petrolSales", {
-                  required: "Petrol sales is required",
+                step="any"
+                {...register("previousPetrolReading", {
+                  required: "Previous reading required",
                 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="0.00"
+                className="w-full px-3 py-2 border rounded-md"
               />
-              {errors.petrolSales && (
-                <span className="text-red-500 text-sm">
-                  {errors.petrolSales.message}
-                </span>
-              )}
             </div>
+
+            {/* Current */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Rate (₹/Liter)
+              <label className="block text-sm font-medium">
+                Current Reading
               </label>
               <input
                 type="number"
-                step="0.01"
-                {...register("petrolRate", {
-                  required: "Petrol rate is required",
+                step="any"
+                {...register("currentPetrolReading", {
+                  required: "Current reading required",
                 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="0.00"
+                className="w-full px-3 py-2 border rounded-md"
               />
-              {errors.petrolRate && (
-                <span className="text-red-500 text-sm">
-                  {errors.petrolRate.message}
-                </span>
-              )}
+            </div>
+
+            {/* Rate */}
+            <div>
+              <label className="block text-sm font-medium">Rate (₹)</label>
+              <input
+                type="number"
+                step="any"
+                {...register("petrolRate", { required: "Rate required" })}
+                className="w-full px-3 py-2 border rounded-md"
+              />
             </div>
           </div>
         </div>
 
-        {/* Diesel Section */}
+        {/* DIESEL SECTION */}
         <div className="bg-green-50 rounded-lg p-4">
           <h3 className="font-semibold text-green-800 mb-3">Diesel Sales</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Previous */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Sales (Liters)
+              <label className="block text-sm font-medium">
+                Previous Reading
               </label>
               <input
                 type="number"
-                step="0.01"
-                {...register("dieselSales", {
-                  required: "Diesel sales is required",
+                step="any"
+                {...register("previousDieselReading", {
+                  required: "Previous reading required",
                 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="0.00"
+                className="w-full px-3 py-2 border rounded-md"
               />
-              {errors.dieselSales && (
-                <span className="text-red-500 text-sm">
-                  {errors.dieselSales.message}
-                </span>
-              )}
             </div>
+
+            {/* Current */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Rate (₹/Liter)
+              <label className="block text-sm font-medium">
+                Current Reading
               </label>
               <input
                 type="number"
-                step="0.01"
-                {...register("dieselRate", {
-                  required: "Diesel rate is required",
+                step="any"
+                {...register("currentDieselReading", {
+                  required: "Current reading required",
                 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="0.00"
+                className="w-full px-3 py-2 border rounded-md"
               />
-              {errors.dieselRate && (
-                <span className="text-red-500 text-sm">
-                  {errors.dieselRate.message}
-                </span>
-              )}
+            </div>
+
+            {/* Rate */}
+            <div>
+              <label className="block text-sm font-medium">Rate (₹)</label>
+              <input
+                type="number"
+                step="any"
+                {...register("dieselRate", {
+                  required: "Rate required",
+                })}
+                className="w-full px-3 py-2 border rounded-md"
+              />
             </div>
           </div>
         </div>
 
-        {/* Payment Section */}
+        {/* PAYMENT SECTION */}
         <div className="bg-purple-50 rounded-lg p-4">
           <h3 className="font-semibold text-purple-800 mb-3">
             Payments Received
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Cash */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Cash Received (₹)
-              </label>
+              <label className="block text-sm font-medium">Cash (₹)</label>
               <input
                 type="number"
-                step="0.01"
-                {...register("cash", { required: "Cash amount is required" })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="0.00"
+                step="any"
+                {...register("cash", { required: "Cash required" })}
+                className="w-full px-3 py-2 border rounded-md"
               />
-              {errors.cash && (
-                <span className="text-red-500 text-sm">
-                  {errors.cash.message}
-                </span>
-              )}
             </div>
+
+            {/* Online Pay */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Online Payment (₹)
+              <label className="block text-sm font-medium">
+                Online Pay (₹)
               </label>
               <input
                 type="number"
-                step="0.01"
-                {...register("onlinePay", {
-                  required: "Online payment is required",
-                })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="0.00"
+                step="any"
+                {...register("onlinePay", { required: "Online pay required" })}
+                className="w-full px-3 py-2 border rounded-md"
               />
-              {errors.onlinePay && (
-                <span className="text-red-500 text-sm">
-                  {errors.onlinePay.message}
-                </span>
-              )}
+            </div>
+
+            {/* Other */}
+            <div>
+              <label className="block text-sm font-medium">
+                Other Payment (₹)
+              </label>
+              <input
+                type="number"
+                step="any"
+                {...register("otherPayment", {
+                  required: "Other payment required",
+                })}
+                className="w-full px-3 py-2 border rounded-md"
+              />
             </div>
           </div>
         </div>
 
+        {/* UDH AAR SECTION */}
         <div className="bg-yellow-50 rounded-lg p-4">
           <h3 className="font-semibold text-yellow-800 mb-3">
             Udhaar (Credit)
@@ -232,75 +301,49 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 rounded-lg border bg-white shadow-sm"
+              className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-white rounded-md shadow-sm border"
             >
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
+                <label className="block text-sm font-medium">Name</label>
                 <input
                   {...register(`udhaar.${index}.name`, {
                     required: "Name is required",
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Customer Name"
+                  className="w-full px-3 py-2 border rounded-md"
                 />
-                {errors?.udhaar?.[index]?.name && (
-                  <p className="text-red-500 text-sm">
-                    {errors.udhaar[index].name?.message}
-                  </p>
-                )}
               </div>
 
               {/* Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date
-                </label>
+                <label className="block text-sm font-medium">Date</label>
                 <input
                   type="date"
                   {...register(`udhaar.${index}.date`, {
-                    required: "Date is required",
+                    required: "Date required",
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border rounded-md"
                 />
-                {errors?.udhaar?.[index]?.date && (
-                  <p className="text-red-500 text-sm">
-                    {errors.udhaar[index].date?.message}
-                  </p>
-                )}
               </div>
 
-              {/* Amount */}
+              {/* AMOUNT */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Amount (₹)
-                </label>
+                <label className="block text-sm font-medium">Amount (₹)</label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="any"
                   {...register(`udhaar.${index}.amount`, {
-                    required: "Amount is required",
-                    valueAsNumber: true,
+                    required: "Amount required",
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="0.00"
+                  className="w-full px-3 py-2 border rounded-md"
                 />
-                {errors?.udhaar?.[index]?.amount && (
-                  <p className="text-red-500 text-sm">
-                    {errors.udhaar[index].amount?.message}
-                  </p>
-                )}
               </div>
 
-              {/* Remove Button */}
+              {/* REMOVE BUTTON */}
               <div className="flex items-end">
                 <button
                   type="button"
-                  onClick={() => {
-                    remove(index);
-                  }}
+                  onClick={() => remove(index)}
                   className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600"
                 >
                   Remove
@@ -319,24 +362,27 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
           </button>
         </div>
 
-        {/* Real-time Calculation Display */}
+        {/* REAL TIME CALCULATION */}
         <div className="bg-gray-50 rounded-lg p-4">
           <h3 className="font-semibold text-gray-800 mb-3">Live Calculation</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 text-center">
+            <div>
               <div className="text-sm text-gray-600">Total Sale Amount</div>
               <div className="text-xl font-bold text-blue-600">
                 ₹{totalSaleAmount.toFixed(2)}
               </div>
             </div>
-            <div className="text-center">
+
+            <div>
               <div className="text-sm text-gray-600">Total Received</div>
               <div className="text-xl font-bold text-green-600">
                 ₹{totalReceived.toFixed(2)}
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-sm text-gray-600">Profit/Loss</div>
+
+            <div>
+              <div className="text-sm text-gray-600">Profit / Loss</div>
               <div
                 className={`text-xl font-bold flex items-center justify-center gap-1 ${
                   profit >= 0 ? "text-green-600" : "text-red-600"
@@ -353,14 +399,15 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
           </div>
         </div>
 
+        {/* SUBMIT BUTTON */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center gap-2"
+          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex justify-center items-center gap-2"
         >
           {isSubmitting ? (
             <>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <div className="animate-spin h-5 w-5 border-b-2 border-white rounded-full"></div>
               Adding Entry...
             </>
           ) : (

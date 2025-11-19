@@ -136,6 +136,10 @@ export async function POST(request: NextRequest) {
       cash: parseFloat(cash),
       onlinePay: parseFloat(onlinePay),
       otherPayment: parseFloat(otherPayment),
+      previousPetrolReading: parseFloat(previousPetrolReading),
+      currentPetrolReading: parseFloat(currentPetrolReading),
+      previousDieselReading: parseFloat(previousDieselReading),
+      currentDieselReading: parseFloat(currentDieselReading),
       name,
       date,
       ...calculations,
@@ -154,7 +158,9 @@ export async function POST(request: NextRequest) {
       {
         message: "Internal server error",
         error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
+          process.env.NODE_ENV === "development"
+            ? (error as Error).message
+            : undefined,
       },
       { status: 500 }
     );
@@ -227,7 +233,9 @@ export async function DELETE(request: NextRequest) {
       {
         message: "Internal server error",
         error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
+          process.env.NODE_ENV === "development"
+            ? (error as Error).message
+            : undefined,
       },
       { status: 500 }
     );
