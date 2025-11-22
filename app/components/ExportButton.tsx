@@ -56,13 +56,74 @@ const ExportButton: React.FC<ExportButtonProps> = ({ entries }) => {
     setTimeout(() => setIsExporting(false), 1000)
   }
 
+  const handlePdfExport = async () => {
+    // Dynamically import libraries to avoid SSR issues
+    const jsPDF = (await import('jspdf')).default
+    const autoTable = (await import('jspdf-autotable')).default
+
+    const doc = new jsPDF()
+
+    const tableColumn = [
+      "Date", 
+      "P. Sales", 
+      "P. Rate", 
+      "D. Sales", 
+      "D. Rate", 
+      "Cash", 
+      "Online", 
+      "Total Sale", 
+      "Received", 
+      "Profit"
+    ]
+    
+    const tableRows: any[] = []
+
+    entries.forEach(entry => {
+      const entryData = [
+        new Date(entry.date).toLocaleDateString('en-IN'),
+        entry.petrolSales,
+        entry.petrolRate,
+        entry.dieselSales,
+        entry.dieselRate,
+        entry.cash,
+        entry.onlinePay,
+        entry.totalSaleAmount.toFixed(2),
+        entry.totalReceived.toFixed(2),
+        entry.profit.toFixed(2)
+      ]
+      tableRows.push(entryData)
+    })
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      theme: 'grid',
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      columnStyles: {
+        0: { cellWidth: 20 }, // Date
+        // Adjust other columns if necessary
+      }
+    })
+
+    doc.setFontSize(18)
+    doc.text("Fuel Station Report", 14, 15)
+    
+    doc.setFontSize(10)
+    doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 14, 20)
+
+    doc.save(`fuel-report-${new Date().toISOString().split('T')[0]}.pdf`)
+  }
+
   const handleWhatsAppShare = () => {
     const message = `Fuel Station Report - ${new Date().toLocaleDateString('en-IN')}
     
 Total Entries: ${entries.length}
 Total Profit: ₹${entries.reduce((sum, entry) => sum + entry.profit, 0).toFixed(2)}
 
-Download detailed report: [CSV file will be shared]`
+Download detailed report: [CSV/PDF file will be shared]`
     
     const encodedMessage = encodeURIComponent(message)
     const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
@@ -88,7 +149,7 @@ Download detailed report: [CSV file will be shared]`
         <h3 className="text-xl font-bold text-gray-800">Export & Share</h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <CSVLink
           data={csvData}
           headers={csvHeaders}
@@ -104,17 +165,25 @@ Download detailed report: [CSV file will be shared]`
           ) : (
             <>
               <Download size={20} />
-              Export to CSV
+              CSV
             </>
           )}
         </CSVLink>
+
+        <button
+          onClick={handlePdfExport}
+          className="flex items-center justify-center gap-2 bg-red-600 text-white py-3 px-4 rounded-md hover:bg-red-700 transition-colors duration-200"
+        >
+          <FileText size={20} />
+          PDF
+        </button>
 
         <button
           onClick={handleWhatsAppShare}
           className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors duration-200"
         >
           <Share2 size={20} />
-          Share on WhatsApp
+          WhatsApp
         </button>
       </div>
 

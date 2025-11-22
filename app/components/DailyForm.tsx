@@ -27,6 +27,10 @@ interface FormData {
   otherPayment: number;
 
   udhaar: UdhaarEntry[];
+  
+  // Calculated fields to send to backend
+  petrolSales?: number;
+  dieselSales?: number;
 }
 
 interface DailyFormProps {
@@ -95,9 +99,30 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      console.log("FORM SUBMIT =>", data);
+      // Calculate sales to ensure they are sent to backend
+      const safeParse = (val: any) => {
+        if (val === "" || val === undefined || val === null) return 0;
+        const num = parseFloat(String(val));
+        return isNaN(num) ? 0 : num;
+      };
 
-      await onAddEntry(data);
+      const pPrev = safeParse(data.previousPetrolReading);
+      const pCurr = safeParse(data.currentPetrolReading);
+      const dPrev = safeParse(data.previousDieselReading);
+      const dCurr = safeParse(data.currentDieselReading);
+
+      const calculatedPetrolSales = pCurr - pPrev;
+      const calculatedDieselSales = dCurr - dPrev;
+
+      const payload = {
+        ...data,
+        petrolSales: calculatedPetrolSales,
+        dieselSales: calculatedDieselSales,
+      };
+
+      console.log("FORM SUBMIT =>", payload);
+
+      await onAddEntry(payload);
       reset();
     } catch (error) {
       console.error("Error adding entry:", error);

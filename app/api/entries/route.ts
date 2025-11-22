@@ -84,6 +84,8 @@ export async function POST(request: NextRequest) {
       currentDieselReading,
       petrolRate,
       dieselRate,
+      petrolSales,
+      dieselSales,
       cash,
       onlinePay,
       otherPayment,
@@ -91,6 +93,9 @@ export async function POST(request: NextRequest) {
       date,
       udhaar,
     } = await request.json();
+
+    console.log("PETROL", petrolSales);
+    
 
     // Required fields
     if (
@@ -125,6 +130,8 @@ export async function POST(request: NextRequest) {
       previousDieselReading: parseFloat(previousDieselReading),
       currentDieselReading: parseFloat(currentDieselReading),
       dieselRate: parseFloat(dieselRate),
+      petrolSales: petrolSales !== undefined ? parseFloat(petrolSales) : undefined,
+      dieselSales: dieselSales !== undefined ? parseFloat(dieselSales) : undefined,
       cash: parseFloat(cash),
       onlinePay: parseFloat(onlinePay),
       otherPayment: parseFloat(otherPayment),
