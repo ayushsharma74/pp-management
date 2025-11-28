@@ -12,6 +12,7 @@ interface Entry {
   dieselRate: number
   cash: number
   onlinePay: number
+  otherPayment: number
   totalSaleAmount: number
   totalReceived: number
   profit: number
