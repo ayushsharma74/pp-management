@@ -71,6 +71,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ entries }) => {
       "D. Rate", 
       "Cash", 
       "Online", 
+      "Others",
       "Total Sale", 
       "Received", 
       "Profit"
@@ -87,6 +88,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ entries }) => {
         entry.dieselRate,
         entry.cash,
         entry.onlinePay,
+        entry.otherPayment,
         entry.totalSaleAmount.toFixed(2),
         entry.totalReceived.toFixed(2),
         entry.profit.toFixed(2)
