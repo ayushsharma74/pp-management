@@ -34,6 +34,16 @@ interface Entry {
   previousDieselReading: number;
   currentDieselReading: number;
 
+  dipPetrolMorning?: string;
+  dipPetrolEvening?: string;
+  petrolStockMorning?: string;
+  petrolStockEvening?: string;
+
+  dipDieselMorning?: string;
+  dipDieselEvening?: string;
+  dieselStockMorning?: string;
+  dieselStockEvening?: string;
+
   cash: number;
   onlinePay: number;
   otherPayment: number;
@@ -133,23 +143,89 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, onDelete }) => {
 
               {/* PETROL */}
               <div className="bg-orange-50 rounded-lg p-3">
-                <div className="text-sm text-gray-600">Petrol Sales</div>
-                <div className="font-semibold text-orange-700">
-                  <h1>Previous Reading : {entry.previousPetrolReading}</h1>
-                  <h1>Current Reading : {entry.currentPetrolReading}</h1>
-                  {entry.petrolSales}L @ ₹{entry.petrolRate} = ₹
-                  {(entry.petrolSales * entry.petrolRate).toFixed(2)}
+                <div className="text-sm text-gray-600 mb-1">Petrol Sales</div>
+                <div className="font-semibold text-orange-700 text-sm space-y-1">
+                  <div>Previous: {entry.previousPetrolReading}</div>
+                  <div>Current: {entry.currentPetrolReading}</div>
+
+                  {/* DIP & Stock Info */}
+                  <div className="bg-orange-100/50 rounded-md p-2 my-2 text-xs text-gray-700 border border-orange-100">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      <div>
+                        <span className="text-gray-500">DIP (M):</span>{" "}
+                        <span className="font-medium">
+                          {entry.dipPetrolMorning || "--"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">DIP (E):</span>{" "}
+                        <span className="font-medium">
+                          {entry.dipPetrolEvening || "--"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Stock (M):</span>{" "}
+                        <span className="font-medium">
+                          {entry.petrolStockMorning || "--"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Stock (E):</span>{" "}
+                        <span className="font-medium">
+                          {entry.petrolStockEvening || "--"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 border-t border-orange-200 mt-1">
+                    {entry.petrolSales}L @ ₹{entry.petrolRate} = ₹
+                    {(entry.petrolSales * entry.petrolRate).toFixed(2)}
+                  </div>
                 </div>
               </div>
 
               {/* DIESEL */}
               <div className="bg-green-50 rounded-lg p-3">
-                <div className="text-sm text-gray-600">Diesel Sales</div>
-                <div className="font-semibold text-green-700">
-                  <h1>Previous Reading : {entry.previousDieselReading}</h1>
-                  <h1>Current Reading : {entry.currentDieselReading}</h1>
-                  {entry.dieselSales}L @ ₹{entry.dieselRate} = ₹
-                  {(entry.dieselSales * entry.dieselRate).toFixed(2)}
+                <div className="text-sm text-gray-600 mb-1">Diesel Sales</div>
+                <div className="font-semibold text-green-700 text-sm space-y-1">
+                  <div>Previous: {entry.previousDieselReading}</div>
+                  <div>Current: {entry.currentDieselReading}</div>
+
+                  {/* DIP & Stock Info */}
+                  <div className="bg-green-100/50 rounded-md p-2 my-2 text-xs text-gray-700 border border-green-100">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      <div>
+                        <span className="text-gray-500">DIP (M):</span>{" "}
+                        <span className="font-medium">
+                          {entry.dipDieselMorning || "--"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">DIP (E):</span>{" "}
+                        <span className="font-medium">
+                          {entry.dipDieselEvening || "--"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Stock (M):</span>{" "}
+                        <span className="font-medium">
+                          {entry.dieselStockMorning || "--"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Stock (E):</span>{" "}
+                        <span className="font-medium">
+                          {entry.dieselStockEvening || "--"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 border-t border-green-200 mt-1">
+                    {entry.dieselSales}L @ ₹{entry.dieselRate} = ₹
+                    {(entry.dieselSales * entry.dieselRate).toFixed(2)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -200,7 +276,8 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, onDelete }) => {
                           {u.paid ? "PAID" : "PENDING"}
                           {u.paid && u.paidDate && (
                             <span className="text-xs font-normal ml-2 text-gray-600">
-                              on {new Date(u.paidDate).toLocaleDateString("en-IN")}
+                              on{" "}
+                              {new Date(u.paidDate).toLocaleDateString("en-IN")}
                             </span>
                           )}
                         </span>

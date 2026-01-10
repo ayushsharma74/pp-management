@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const entries = await DailyEntry.find({})
       .select(
-        "petrolSales petrolRate dieselSales dieselRate cash onlinePay otherPayment totalSaleAmount totalReceived profit date name udhaar createdAt updatedAt previousPetrolReading currentPetrolReading previousDieselReading currentDieselReading"
+        "petrolSales petrolRate dieselSales dieselRate cash onlinePay otherPayment totalSaleAmount totalReceived profit date name udhaar createdAt updatedAt previousPetrolReading currentPetrolReading previousDieselReading currentDieselReading dipPetrolMorning dipPetrolEvening petrolStockMorning petrolStockEvening dipDieselMorning dipDieselEvening dieselStockMorning dieselStockEvening"
       )
       .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 })
       .limit(limit)
@@ -92,10 +92,18 @@ export async function POST(request: NextRequest) {
       name,
       date,
       udhaar,
+      dipPetrolMorning,
+      dipPetrolEvening,
+      petrolStockMorning,
+      petrolStockEvening,
+      dipDieselMorning,
+      dipDieselEvening,
+      dieselStockMorning,
+      dieselStockEvening,
     } = await request.json();
 
-    console.log("PETROL", petrolSales);
-    
+
+
 
     // Required fields
     if (
@@ -115,11 +123,11 @@ export async function POST(request: NextRequest) {
     // Format udhaar
     const formattedUdhaar = Array.isArray(udhaar)
       ? udhaar.map((u: any) => ({
-          name: String(u.name).toLowerCase(),
-          amount: parseFloat(u.amount),
-          date: new Date(u.date),
-          paid: Boolean(u.paid) || false,
-        }))
+        name: String(u.name).toLowerCase(),
+        amount: parseFloat(u.amount),
+        date: new Date(u.date),
+        paid: Boolean(u.paid) || false,
+      }))
       : [];
 
     // Reading-based profit calculation
@@ -147,6 +155,14 @@ export async function POST(request: NextRequest) {
       currentPetrolReading: parseFloat(currentPetrolReading),
       previousDieselReading: parseFloat(previousDieselReading),
       currentDieselReading: parseFloat(currentDieselReading),
+      dipPetrolMorning: dipPetrolMorning || "",
+      dipPetrolEvening: dipPetrolEvening || "",
+      petrolStockMorning: petrolStockMorning || "",
+      petrolStockEvening: petrolStockEvening || "",
+      dipDieselMorning: dipDieselMorning || "",
+      dipDieselEvening: dipDieselEvening || "",
+      dieselStockMorning: dieselStockMorning || "",
+      dieselStockEvening: dieselStockEvening || "",
       name,
       date,
       ...calculations,

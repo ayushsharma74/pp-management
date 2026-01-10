@@ -19,6 +19,16 @@ interface Entry {
   currentPetrolReading: number;
   previousDieselReading: number;
   currentDieselReading: number;
+
+  dipPetrolMorning?: string;
+  dipPetrolEvening?: string;
+  petrolStockMorning?: string;
+  petrolStockEvening?: string;
+
+  dipDieselMorning?: string;
+  dipDieselEvening?: string;
+  dieselStockMorning?: string;
+  dieselStockEvening?: string;
   cash: number;
   onlinePay: number;
   otherPayment: number;

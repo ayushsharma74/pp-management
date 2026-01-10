@@ -23,6 +23,17 @@ export interface DailyEntry extends mongoose.Document {
   previousDieselReading: number;
   currentDieselReading: number;
 
+  /* --- New DIP/Stock Fields --- */
+  dipPetrolMorning: string;
+  dipPetrolEvening: string;
+  petrolStockMorning: string;
+  petrolStockEvening: string;
+
+  dipDieselMorning: string;
+  dipDieselEvening: string;
+  dieselStockMorning: string;
+  dieselStockEvening: string;
+
   /* --- Payments --- */
   cash: number;
   onlinePay: number;
@@ -72,6 +83,17 @@ const dailyEntrySchema = new mongoose.Schema<DailyEntry>(
 
     previousDieselReading: { type: Number, required: true, min: 0 },
     currentDieselReading: { type: Number, required: true, min: 0 },
+
+    /* --- New DIP/Stock Fields --- */
+    dipPetrolMorning: { type: String, default: "" },
+    dipPetrolEvening: { type: String, default: "" },
+    petrolStockMorning: { type: String, default: "" },
+    petrolStockEvening: { type: String, default: "" },
+
+    dipDieselMorning: { type: String, default: "" },
+    dipDieselEvening: { type: String, default: "" },
+    dieselStockMorning: { type: String, default: "" },
+    dieselStockEvening: { type: String, default: "" },
 
     /* --- Payments --- */
     cash: { type: Number, required: true, min: 0 },

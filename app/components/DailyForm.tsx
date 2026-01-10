@@ -14,6 +14,16 @@ interface FormData {
   name: string;
   date: string;
 
+  dipPetrolMorning: string;
+  dipPetrolEvening: string;
+  petrolStockMorning: string;
+  petrolStockEvening: string;
+
+  dipDieselMorning: string;
+  dipDieselEvening: string;
+  dieselStockMorning: string;
+  dieselStockEvening: string;
+
   previousPetrolReading: number;
   currentPetrolReading: number;
   petrolRate: number;
@@ -27,7 +37,7 @@ interface FormData {
   otherPayment: number;
 
   udhaar: UdhaarEntry[];
-  
+
   // Calculated fields to send to backend
   petrolSales?: number;
   dieselSales?: number;
@@ -154,6 +164,146 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
           />
           {errors.name && (
             <p className="text-red-500 text-sm">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            DIP Petrol Morning (AUTO/MANUAL)
+          </label>
+
+          <input
+            type="text"
+            {...register("dipPetrolMorning", {
+              required: "DIP Petrol Morning is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.dipPetrolMorning && (
+            <p className="text-red-500 text-sm">
+              {errors.dipPetrolMorning.message}
+            </p>
+          )}
+
+          <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+            DIP Petrol Evening (AUTO/MANUAL)
+          </label>
+          <input
+            type="text"
+            {...register("dipPetrolEvening", {
+              required: "DIP Petrol Evening is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.dipPetrolEvening && (
+            <p className="text-red-500 text-sm">
+              {errors.dipPetrolEvening.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Petrol Stock Morning (AUTO/MANUAL)
+          </label>
+
+          <input
+            type="text"
+            {...register("petrolStockMorning", {
+              required: "Petrol Stock Morning is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.petrolStockMorning && (
+            <p className="text-red-500 text-sm">
+              {errors.petrolStockMorning.message}
+            </p>
+          )}
+
+          <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+            Petrol Stock Evening (AUTO/MANUAL)
+          </label>
+          <input
+            type="text"
+            {...register("petrolStockEvening", {
+              required: "Petrol Stock Evening is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.petrolStockEvening && (
+            <p className="text-red-500 text-sm">
+              {errors.petrolStockEvening.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            DIP Diesel Morning (AUTO/MANUAL)
+          </label>
+
+          <input
+            type="text"
+            {...register("dipDieselMorning", {
+              required: "DIP Diesel Morning is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.dipDieselMorning && (
+            <p className="text-red-500 text-sm">
+              {errors.dipDieselMorning.message}
+            </p>
+          )}
+
+          <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+            DIP Diesel Evening (AUTO/MANUAL)
+          </label>
+          <input
+            type="text"
+            {...register("dipDieselEvening", {
+              required: "DIP Diesel Evening is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.dipDieselEvening && (
+            <p className="text-red-500 text-sm">
+              {errors.dipDieselEvening.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Diesel Stock Morning (AUTO/MANUAL)
+          </label>
+
+          <input
+            type="text"
+            {...register("dieselStockMorning", {
+              required: "Diesel Stock Morning is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.dieselStockMorning && (
+            <p className="text-red-500 text-sm">
+              {errors.dieselStockMorning.message}
+            </p>
+          )}
+
+          <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+            Diesel Stock Evening (AUTO/MANUAL)
+          </label>
+          <input
+            type="text"
+            {...register("dieselStockEvening", {
+              required: "Diesel Stock Evening is required",
+            })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {errors.dieselStockEvening && (
+            <p className="text-red-500 text-sm">
+              {errors.dieselStockEvening.message}
+            </p>
           )}
         </div>
 
