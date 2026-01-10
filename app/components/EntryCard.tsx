@@ -14,6 +14,7 @@ import { apiService } from "../services/api";
 
 interface UdhaarEntry {
   name: string;
+  phoneNumber?: string;
   date: string;
   amount: number;
   paid: boolean;
@@ -282,16 +283,23 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, onDelete }) => {
                           )}
                         </span>
 
-                        <div className="flex justify-between text-sm">
-                          <span className="font-semibold text-gray-800">
-                            {u.name}
-                          </span>
-                          <span className="text-gray-600">
-                            {new Date(u.date).toLocaleDateString("en-IN")}
-                          </span>
+                        <div className="flex flex-col text-sm mt-1">
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-gray-800">
+                              {u.name}
+                            </span>
+                            <span className="text-gray-600">
+                              {new Date(u.date).toLocaleDateString("en-IN")}
+                            </span>
+                          </div>
+                          {u.phoneNumber && (
+                            <span className="text-xs text-gray-500">
+                              {u.phoneNumber}
+                            </span>
+                          )}
                         </div>
 
-                        <div className="text-yellow-700 font-bold">
+                        <div className="text-yellow-700 font-bold mt-1">
                           ₹{Number(u.amount).toFixed(2)}
                         </div>
                       </div>

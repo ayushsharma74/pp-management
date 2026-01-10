@@ -41,6 +41,8 @@ export async function GET(request: NextRequest) {
       .skip((page - 1) * limit)
       .lean<any[]>();
 
+
+
     const total = await DailyEntry.countDocuments();
 
     return NextResponse.json({
@@ -125,10 +127,13 @@ export async function POST(request: NextRequest) {
       ? udhaar.map((u: any) => ({
         name: String(u.name).toLowerCase(),
         amount: parseFloat(u.amount),
+        phoneNumber: String(u.phoneNumber),
         date: new Date(u.date),
         paid: Boolean(u.paid) || false,
       }))
       : [];
+
+    console.log("FORMATTED UDHAAR", formattedUdhaar);
 
     // Reading-based profit calculation
     const calculations = calculateProfit({

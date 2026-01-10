@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 interface UdhaarEntry {
   name: string;
+  phoneNumber: string;
   date: Date;
   amount: number;
   paid: boolean;
@@ -54,6 +55,7 @@ export interface DailyEntry extends mongoose.Document {
 const udhaarSchema = new mongoose.Schema<UdhaarEntry>(
   {
     name: { type: String, required: true, trim: true, lowercase: true },
+    phoneNumber: { type: String, required: true },
     date: { type: Date, required: true },
     amount: { type: Number, required: true, min: 0 },
     paid: { type: Boolean, default: false },

@@ -7,6 +7,7 @@ import { Plus, Calculator, TrendingUp, TrendingDown } from "lucide-react";
 interface UdhaarEntry {
   name: string;
   date: string;
+  phoneNumber: string;
   amount: number;
 }
 
@@ -495,6 +496,18 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium">
+                  Phone Number
+                </label>
+                <input
+                  {...register(`udhaar.${index}.phoneNumber`, {
+                    required: "Phone number required",
+                  })}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+
               {/* Date */}
               <div>
                 <label className="block text-sm font-medium">Date</label>
@@ -535,7 +548,9 @@ const DailyForm: React.FC<DailyFormProps> = ({ onAddEntry }) => {
 
           <button
             type="button"
-            onClick={() => append({ name: "", date: "", amount: 0 })}
+            onClick={() =>
+              append({ name: "", phoneNumber: "", date: "", amount: 0 })
+            }
             className="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 flex items-center gap-2"
           >
             <Plus size={18} />
