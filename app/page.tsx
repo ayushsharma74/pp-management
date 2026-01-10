@@ -157,6 +157,11 @@ export default function Home() {
                 {/* Name + Date */}
                 <div>
                   <div className="text-sm font-semibold">{u.name}</div>
+                  {u.phoneNumber && (
+                    <span className="text-xs text-gray-500">
+                      {u.phoneNumber}
+                    </span>
+                  )}
                   <div className="text-xs text-zinc-600">
                     {new Date(u.date).toLocaleDateString("en-IN", {
                       day: "numeric",
