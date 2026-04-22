@@ -114,7 +114,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Fuel Station Tracker
+                B.R.S Energy Station
               </h1>
               <p className="text-gray-600">
                 Track daily sales and calculate profit/loss
